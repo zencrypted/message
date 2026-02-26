@@ -6,10 +6,6 @@
 
 import Foundation
 
-#if canImport(UIKit)
-import UIKit
-#endif
-
 actor MessagePeer {
     var topic: Int = 28
     weak var service: MessageService?
@@ -30,12 +26,13 @@ actor MessagePeer {
     }
     
     static func deviceUniqueIdentifier() -> String {
-        let name = ProcessInfo.processInfo.hostName
-        
-        #if canImport(UIKit)
-        let vendorPart = UIDevice.current.identifierForVendor?.uuidString ?? ""
+        #if os(macOS)
+            let vendorPart = ""
+            let name = Host.current().localizedName ?? "Mac"
         #else
-        let vendorPart = ""
+            // iOS / iPadOS / tvOS / watchOS / visionOS path
+            let vendor = UIDevice.current.identifierForVendor?.uuidString ?? ""
+            let name = Host.current().localizedName ?? "Device"
         #endif
             
         if vendorPart.isEmpty { return name } else { return "\(vendorPart)-\(name)" }
